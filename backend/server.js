@@ -128,7 +128,7 @@ app.post('/chat', async (req, res) => {
   try {
     // --- Chama a API da Anthropic com histórico completo ---
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',  // Modelo mais recente e eficiente
+      model: 'claude-sonnet-4-5',  // Modelo mais recente e eficiente
       max_tokens: 1024,                    // Limite de tokens por resposta
       system: SYSTEM_PROMPT,              // Identidade e regras da IA
       messages: session.messages          // Histórico completo da sessão
