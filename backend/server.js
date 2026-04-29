@@ -31,7 +31,11 @@ const anthropic = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
 
 // CORS — permite requisições do frontend (Vercel/Netlify)
 // Em produção, substitua '*' pela URL real do seu frontend
-app.use(cors({ origin: '*' }));
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type']
+}));
 
 // Parser de JSON — necessário para ler req.body
 app.use(express.json());
