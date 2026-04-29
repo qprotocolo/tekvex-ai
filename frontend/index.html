@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TekVex AI — Assistente da Clínica</title>
+<style>
+  /* ============================================================
+     RESET E BASE
+  ============================================================ */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg:        #0a0f0a;
+    --surface:   #111711;
+    --surface2:  #182018;
+    --border:    #1e2e1e;
+    --green:     #00c853;
+    --green-dim: #007a32;
+    --green-glow:rgba(0, 200, 83, 0.15);
+    --text:      #e8f5e8;
+    --muted:     #6b8c6b;
+    --white:     #ffffff;
+    --danger:    #ff5252;
+    --radius:    16px;
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  /* ============================================================
+     LAYOUT PRINCIPAL
+  ============================================================ */
+  .chat-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  /* ============================================================
+     HEADER
+  ============================================================ */
+  .chat-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .header-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-dim), var(--green));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 0 16px var(--green-glow);
+  }
+
+  .header-info { flex: 1; }
+
+  .header-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 2px;
+  }
+
+  .header-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--green);
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--green);
+    animation: blink 2s infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+  }
+
+  .header-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--green);
+    background: var(--green-glow);
+    border: 1px solid rgba(0,200,83,0.25);
+    padding: 3px 10px;
+    border-radius: 100px;
+  }
+
+  /* ============================================================
+     ÁREA DE MENSAGENS
+  ============================================================ */
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scroll-behavior: smooth;
+  }
+
+  /* Scrollbar sutil */
+  .chat-messages::-webkit-scrollbar { width: 3px; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+
+  /* ---- BOLHAS ---- */
+  .msg {
+    display: flex;
+    gap: 8px;
+    max-width: 88%;
+    animation: fadeUp 0.25s ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Mensagem da IA — alinhada à esquerda */
+  .msg.ai { align-self: flex-start; align-items: flex-end; }
+
+  .msg-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-dim), var(--green));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  .msg-bubble {
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 100%;
+    word-break: break-word;
+  }
+
+  .msg.ai .msg-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+    color: var(--text);
+  }
+
+  /* Mensagem do usuário — alinhada à direita */
+  .msg.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+
+  .msg.user .msg-bubble {
+    background: linear-gradient(135deg, var(--green-dim), #00a844);
+    border-bottom-right-radius: 4px;
+    color: var(--white);
+    font-weight: 500;
+  }
+
+  /* ---- TYPING INDICATOR ---- */
+  .typing-indicator {
+    display: none;
+    align-self: flex-start;
+    align-items: flex-end;
+    gap: 8px;
+  }
+
+  .typing-indicator.show { display: flex; }
+
+  .typing-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    border-bottom-left-radius: 4px;
+    padding: 14px 18px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  .typing-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: typing 1.2s infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30%            { transform: translateY(-5px); opacity: 1; }
+  }
+
+  /* ---- BOTÃO WHATSAPP ---- */
+  .whatsapp-cta {
+    display: none;
+    margin: 4px 0;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .whatsapp-cta.show { display: block; }
+
+  .whatsapp-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px;
+    background: #25D366;
+    border: none;
+    border-radius: var(--radius);
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+  }
+
+  .whatsapp-btn:hover { background: #20ba5a; transform: translateY(-1px); }
+  .whatsapp-btn:active { transform: translateY(0); }
+
+  .whatsapp-icon { font-size: 20px; }
+
+  /* ============================================================
+     INPUT AREA
+  ============================================================ */
+  .chat-input-area {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    padding: 12px 16px;
+    flex-shrink: 0;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+  }
+
+  .input-box {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 12px 18px;
+    font-size: 14px;
+    color: var(--text);
+    resize: none;
+    outline: none;
+    max-height: 120px;
+    min-height: 46px;
+    line-height: 1.5;
+    font-family: inherit;
+    transition: border-color 0.2s;
+  }
+
+  .input-box::placeholder { color: var(--muted); }
+  .input-box:focus { border-color: var(--green-dim); }
+
+  .send-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--green);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    box-shadow: 0 2px 12px var(--green-glow);
+  }
+
+  .send-btn:hover { background: #00e65e; transform: scale(1.05); }
+  .send-btn:active { transform: scale(0.97); }
+  .send-btn:disabled { background: var(--border); cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .send-icon {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: #000;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .input-hint {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  /* ============================================================
+     ERRO
+  ============================================================ */
+  .msg.error .msg-bubble {
+    background: rgba(255,82,82,0.1);
+    border: 1px solid rgba(255,82,82,0.3);
+    color: var(--danger);
+  }
+</style>
+</head>
+<body>
+
+<div class="chat-wrapper">
+
+  <!-- HEADER -->
+  <div class="chat-header">
+    <div class="header-avatar">🏥</div>
+    <div class="header-info">
+      <div class="header-name">Vex — Assistente Virtual</div>
+      <div class="header-status">
+        <div class="status-dot"></div>
+        Online agora
+      </div>
+    </div>
+    <div class="header-badge">TekVex AI</div>
+  </div>
+
+  <!-- MENSAGENS -->
+  <div class="chat-messages" id="chatMessages">
+
+    <!-- Typing indicator — controlado por JS -->
+    <div class="typing-indicator" id="typingIndicator">
+      <div class="msg-avatar">🤖</div>
+      <div class="typing-bubble">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- INPUT -->
+  <div class="chat-input-area">
+    <div class="input-row">
+      <textarea
+        class="input-box"
+        id="inputBox"
+        placeholder="Digite sua mensagem..."
+        rows="1"
+      ></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+        <svg class="send-icon" viewBox="0 0 24 24">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+    <div class="input-hint">Suas informações são tratadas com segurança</div>
+  </div>
+
+</div>
+
+<script>
+  // ============================================================
+  // CONFIGURAÇÃO — altere apenas estas variáveis por cliente
+  // ============================================================
+  const CONFIG = {
+    // URL do backend no Railway
+    API_URL: 'https://tekvex-ai-production.up.railway.app',
+
+    // Número do WhatsApp da clínica (formato: 5511999999999)
+    WHATSAPP_NUMBER: '5511999999999',
+
+    // Nome da clínica para personalização
+    CLINIC_NAME: 'nossa clínica',
+  };
+
+  // ============================================================
+  // ESTADO DA SESSÃO
+  // sessionId único por aba — mantém o histórico no backend
+  // ============================================================
+  const sessionId = 'sess_' + Math.random().toString(36).substr(2, 12);
+  let isWaitingResponse = false;
+  let leadData = null; // Armazena dados do lead quando detectados
+
+  // ============================================================
+  // INICIALIZAÇÃO
+  // Envia mensagem vazia para triggar a saudação automática da IA
+  // ============================================================
+  window.addEventListener('DOMContentLoaded', () => {
+    // Pequeno delay para UX — parece que a IA está "acordando"
+    setTimeout(() => {
+      triggerGreeting();
+    }, 800);
+
+    // Enter envia, Shift+Enter quebra linha
+    document.getElementById('inputBox').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Auto-resize do textarea conforme o usuário digita
+    document.getElementById('inputBox').addEventListener('input', autoResize);
+  });
+
+  // ============================================================
+  // SAUDAÇÃO INICIAL
+  // ============================================================
+  async function triggerGreeting() {
+    showTyping(true);
+    try {
+      const response = await callBackend('Olá');
+      showTyping(false);
+      addMessage('ai', response.reply);
+    } catch (err) {
+      showTyping(false);
+      addMessage('error', 'Não consegui conectar ao servidor. Tente recarregar a página.');
+    }
+  }
+
+  // ============================================================
+  // ENVIAR MENSAGEM DO USUÁRIO
+  // ============================================================
+  async function sendMessage() {
+    const input = document.getElementById('inputBox');
+    const text = input.value.trim();
+
+    // Bloqueia envio se vazio ou aguardando resposta
+    if (!text || isWaitingResponse) return;
+
+    // Exibe a mensagem do usuário imediatamente
+    addMessage('user', text);
+    input.value = '';
+    autoResize();
+
+    // Bloqueia input durante a espera
+    setLoading(true);
+
+    try {
+      const response = await callBackend(text);
+
+      // Remove a tag [LEAD: ...] da resposta antes de exibir
+      const cleanReply = response.reply.replace(/\[LEAD:.*?\]/gs, '').trim();
+      addMessage('ai', cleanReply);
+
+      // Se o backend detectou lead completo, exibe botão de WhatsApp
+      if (response.leadDetected) {
+        handleLeadDetected(response.reply);
+      }
+
+    } catch (err) {
+      addMessage('error', '⚠️ Erro ao processar sua mensagem. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ============================================================
+  // CHAMADA AO BACKEND
+  // ============================================================
+  async function callBackend(message) {
+    const response = await fetch(`${CONFIG.API_URL}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, sessionId }),
+    });
+
+    // Erros HTTP são tratados como exceções
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || `HTTP ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  // ============================================================
+  // DETECÇÃO DE LEAD — exibe botão do WhatsApp
+  // ============================================================
+  function handleLeadDetected(rawReply) {
+    // Extrai nome e telefone da tag [LEAD: ...]
+    const match = rawReply.match(/\[LEAD:\s*nome=([^,]+),\s*telefone=([^\]]+)\]/);
+    if (match) {
+      leadData = { nome: match[1].trim(), telefone: match[2].trim() };
+    }
+
+    // Monta mensagem pré-preenchida para o WhatsApp
+    const preMsg = leadData
+      ? `Olá! Me chamo ${leadData.nome} e gostaria de agendar uma consulta. Meu contato: ${leadData.telefone}.`
+      : `Olá! Gostaria de agendar uma consulta.`;
+
+    const waLink = `https://wa.me/${CONFIG.WHATSAPP_NUMBER}?text=${encodeURIComponent(preMsg)}`;
+
+    // Cria e exibe o botão de WhatsApp no chat
+    const ctaDiv = document.createElement('div');
+    ctaDiv.className = 'whatsapp-cta show';
+    ctaDiv.innerHTML = `
+      <a href="${waLink}" target="_blank" class="whatsapp-btn">
+        <span class="whatsapp-icon">💬</span>
+        Continuar pelo WhatsApp
+      </a>
+    `;
+
+    const messages = document.getElementById('chatMessages');
+    messages.insertBefore(ctaDiv, document.getElementById('typingIndicator'));
+    scrollToBottom();
+  }
+
+  // ============================================================
+  // ADICIONAR MENSAGEM NA TELA
+  // ============================================================
+  function addMessage(type, text) {
+    const messages = document.getElementById('chatMessages');
+
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `msg ${type}`;
+
+    const isAI = type === 'ai' || type === 'error';
+
+    msgDiv.innerHTML = `
+      ${isAI ? `<div class="msg-avatar">${type === 'error' ? '⚠️' : '🤖'}</div>` : ''}
+      <div class="msg-bubble">${escapeHTML(text)}</div>
+    `;
+
+    // Insere ANTES do typing indicator para manter ordem correta
+    messages.insertBefore(msgDiv, document.getElementById('typingIndicator'));
+    scrollToBottom();
+  }
+
+  // ============================================================
+  // UTILITÁRIOS
+  // ============================================================
+
+  function showTyping(show) {
+    const indicator = document.getElementById('typingIndicator');
+    indicator.classList.toggle('show', show);
+    if (show) scrollToBottom();
+  }
+
+  function setLoading(loading) {
+    isWaitingResponse = loading;
+    const btn = document.getElementById('sendBtn');
+    const input = document.getElementById('inputBox');
+    btn.disabled = loading;
+    input.disabled = loading;
+    showTyping(loading);
+  }
+
+  function scrollToBottom() {
+    const messages = document.getElementById('chatMessages');
+    messages.scrollTop = messages.scrollHeight;
+  }
+
+  function autoResize() {
+    const ta = document.getElementById('inputBox');
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 120) + 'px';
+  }
+
+  // Previne XSS — escapa HTML antes de inserir texto do usuário/IA
+  function escapeHTML(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;')
+      .replace(/\n/g, '<br>');
+  }
+</script>
+
+</body>
+</html>
