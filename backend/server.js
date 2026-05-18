@@ -57,6 +57,13 @@ app.use(cors({
 app.use(express.json());
 
 app.disable('x-powered-by');
+const chatLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  message: {
+    error: "Muitas requisições. Tente novamente em alguns segundos."
+  }
+});
 
 // ---------------------------------------------------------------
 // SESSÕES EM MEMÓRIA
