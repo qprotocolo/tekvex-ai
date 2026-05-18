@@ -194,7 +194,7 @@ function authMiddleware(req, res, next) {
   next();
 }
 
-app.post('/chat', chatLimiter, async (req, res) => {
+app.post('/chat', authMiddleware, chatLimiter, async (req, res) => {
   const { message, sessionId } = req.body;
 
   // 1. validação base (ANTES de qualquer trim)
