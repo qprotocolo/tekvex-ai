@@ -278,11 +278,11 @@ Estado atual do usuário:
   try {
     // --- Chama Claude com histórico completo ---
     const response = await anthropic.messages.create({
-      model:    'claude-sonnet-4-5',
-      max_tokens: 1024,
-      system: SYSTEM_PROMPT + stateContext,
-      messages: session.messages,
-    });
+  model: 'claude-sonnet-4-5',
+  max_tokens: 1024,
+  system: SYSTEM_PROMPT + stateContext,
+  messages: session.messages,
+});
 
     const reply = response.content[0].text;
 
