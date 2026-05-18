@@ -240,12 +240,6 @@ if (trimmedMessage.length > 500) {
 
   const session = sessions.get(sessionId);
 
-  // --- Bloqueia sessões expiradas ---
-  if (Date.now() - session.createdAt > SESSION_TTL) {
-    sessions.delete(sessionId);
-    return res.status(410).json({ error: 'Sessão expirada. Recarregue o chat.' });
-  }
-
   session.messages.push({
   role: 'user',
   content: trimmedMessage
