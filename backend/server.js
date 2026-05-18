@@ -257,17 +257,19 @@ if (trimmedMessage.length > 500) {
 
 
   // --- Recupera ou cria sessão ---
+  if (!sessions.has(sessionId)) {
   sessions.set(sessionId, {
-  messages: [],
-  createdAt: Date.now(),
-  state: {
-    step: 0,
-    nome: null,
-    problema: null,
-    urgencia: null,
-    horario: null
+    messages: [],
+    createdAt: Date.now(),
+    state: {
+      step: 0,
+      nome: null,
+      problema: null,
+      urgencia: null,
+      horario: null
+    }
+  });
   }
-});
 
   const session = sessions.get(sessionId);
 
