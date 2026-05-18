@@ -278,7 +278,7 @@ if (["manhã", "tarde", "noite"].some(t => trimmedMessage.includes(t))) {
   session.state.step = 5;
 }
 
-saveMessage(sessionId, 'user', trimmedMessage);
+await saveMessage(sessionId, 'user', trimmedMessage);
   
   const stateContext = `
 Estado atual do usuário:
