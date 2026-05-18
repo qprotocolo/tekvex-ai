@@ -312,6 +312,11 @@ Estado atual do usuário:
     // --- Adiciona resposta da IA ao histórico em memória ---
     session.messages.push({ role: 'assistant', content: reply });
 
+    // mantém só últimas 20 mensagens também após resposta
+if (session.messages.length > 20) {
+  session.messages = session.messages.slice(-20);
+}
+
     // --- Salva resposta da IA no banco ---
     await saveMessage(sessionId, 'assistant', reply);
 
