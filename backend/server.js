@@ -47,8 +47,20 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 // ---------------------------------------------------------------
 
 // CORS — permite requisições do frontend Vercel
+const ALLOWED_ORIGINS = [
+  'https://seu-frontend.vercel.app'
+];
+
 app.use(cors({
-  origin: '*',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+
+    if (ALLOWED_ORIGINS.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Bloqueado por CORS'));
+  },
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type']
 }));
