@@ -277,6 +277,31 @@ if (trimmedMessage.length > 500) {
   content: trimmedMessage
 });
 
+  // Atualização de estado simples (pipeline básico)
+if (!session.state.nome) {
+  session.state.step = 1;
+}
+
+if (trimmedMessage.length < 30 && session.state.step === 1) {
+  session.state.nome = trimmedMessage;
+  session.state.step = 2;
+}
+
+if (session.state.step === 2 && trimmedMessage.length > 30) {
+  session.state.problema = trimmedMessage;
+  session.state.step = 3;
+}
+
+if (trimmedMessage.includes("urgente") || trimmedMessage.includes("dias")) {
+  session.state.urgencia = trimmedMessage;
+  session.state.step = 4;
+}
+
+if (["manhã", "tarde", "noite"].some(t => trimmedMessage.includes(t))) {
+  session.state.horario = trimmedMessage;
+  session.state.step = 5;
+}
+
 saveMessage(sessionId, 'user', trimmedMessage);
 
   try {
