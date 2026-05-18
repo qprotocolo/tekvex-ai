@@ -253,6 +253,11 @@ if (trimmedMessage.length > 500) {
   content: trimmedMessage
 });
 
+  // limita histórico para as últimas 20 mensagens
+if (session.messages.length > 20) {
+  session.messages = session.messages.slice(-20);
+}
+
   // Atualização de estado simples (pipeline básico)
 if (!session.state.nome) {
   session.state.step = 1;
