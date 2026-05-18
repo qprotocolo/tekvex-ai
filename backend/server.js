@@ -246,11 +246,12 @@ if (trimmedMessage.length > 500) {
     return res.status(410).json({ error: 'Sessão expirada. Recarregue o chat.' });
   }
 
-  // --- Adiciona mensagem do usuário ao histórico em memória ---
-  session.messages.push({ role: 'user', content: message.trim() });
+  session.messages.push({
+  role: 'user',
+  content: trimmedMessage
+});
 
-  // --- Salva mensagem do usuário no banco (não bloqueia resposta) ---
-  saveMessage(sessionId, 'user', message.trim());
+saveMessage(sessionId, 'user', trimmedMessage);
 
   try {
     // --- Chama Claude com histórico completo ---
