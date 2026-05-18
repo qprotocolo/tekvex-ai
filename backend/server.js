@@ -218,7 +218,7 @@ app.get('/', (req, res) => {
 // ROTA PRINCIPAL — POST /chat
 // Recebe mensagem, chama a IA, salva no banco e retorna resposta.
 // ---------------------------------------------------------------
-app.post('/chat', async (req, res) => {
+app.post('/chat', chatLimiter, async (req, res) => {
   const { message, sessionId } = req.body;
 
   // 1. validação base (ANTES de qualquer trim)
