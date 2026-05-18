@@ -56,6 +56,8 @@ app.use(cors({
 // Parser de JSON — necessário para ler req.body
 app.use(express.json());
 
+app.disable('x-powered-by');
+
 // ---------------------------------------------------------------
 // SESSÕES EM MEMÓRIA
 // Mantém o histórico de conversa por sessionId.
