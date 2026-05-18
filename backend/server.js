@@ -317,7 +317,10 @@ Estado atual do usuário:
     }
 
     // --- Retorna resposta para o frontend ---
-    return res.json({ reply, leadDetected });
+    return res.json({
+  reply: cleanReply,
+  leadDetected
+});
 
   } catch (error) {
     console.error('Erro ao chamar Anthropic API:', error.message);
