@@ -299,6 +299,11 @@ Estado atual do usuário:
 
     const reply = response.content[0].text;
 
+    const cleanReply = reply.replace(
+  /\[LEAD:[^\]]+\]/g,
+  ''
+).trim();
+
     // --- Adiciona resposta da IA ao histórico em memória ---
     session.messages.push({ role: 'assistant', content: reply });
 
