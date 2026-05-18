@@ -308,7 +308,7 @@ Estado atual do usuário:
     session.messages.push({ role: 'assistant', content: reply });
 
     // --- Salva resposta da IA no banco ---
-    saveMessage(sessionId, 'assistant', reply);
+    await saveMessage(sessionId, 'assistant', reply);
 
     // --- Detecta se lead foi coletado e salva no banco ---
     const leadDetected = reply.includes('[LEAD:');
