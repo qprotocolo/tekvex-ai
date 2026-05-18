@@ -270,7 +270,6 @@ if (trimmedMessage.length > 500) {
     }
   });
   }
-
   const session = sessions.get(sessionId);
 
   session.messages.push({
