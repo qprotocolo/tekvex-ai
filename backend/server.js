@@ -232,14 +232,6 @@ if (trimmedMessage.length > 500) {
   });
 }
 
-  // --- Validação de entrada ---
-  if (!message || typeof message !== 'string' || message.trim() === '') {
-    return res.status(400).json({ error: 'Campo "message" é obrigatório.' });
-  }
-
-  if (!sessionId || typeof sessionId !== 'string') {
-    return res.status(400).json({ error: 'Campo "sessionId" é obrigatório.' });
-  }
 
   // --- Recupera ou cria sessão ---
   if (!sessions.has(sessionId)) {
