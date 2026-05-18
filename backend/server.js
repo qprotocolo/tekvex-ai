@@ -91,6 +91,19 @@ const chatLimiter = rateLimit({
 const sessions    = new Map();
 const SESSION_TTL = 30 * 60 * 1000; // 30 minutos
 
+setInterval(() => {
+  const now = Date.now();
+
+  for (const [sessionId, session] of sessions.entries()) {
+    const expired = now - session.createdAt > SESSION_TTL;
+
+    if (expired) {
+      sessions.delete(sessionId);
+      console.log(`Sessão removida: ${sessionId}`);
+    }
+  }
+}, 5 * 60 * 1000);
+
 // ---------------------------------------------------------------
 // SYSTEM PROMPT — Núcleo da identidade da Vex
 // ---------------------------------------------------------------
