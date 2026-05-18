@@ -211,6 +211,17 @@ app.get('/', (req, res) => {
 app.post('/chat', async (req, res) => {
   const { message, sessionId } = req.body;
   const trimmedMessage = message.trim();
+  if (trimmedMessage.length < 2) {
+  return res.status(400).json({
+    error: "Mensagem muito curta"
+  });
+}
+
+if (trimmedMessage.length > 500) {
+  return res.status(400).json({
+    error: "Mensagem muito longa (máx 500 caracteres)"
+  });
+}
 
   // --- Validação de entrada ---
   if (!message || typeof message !== 'string' || message.trim() === '') {
