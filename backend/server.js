@@ -266,6 +266,7 @@ if (["manhã", "tarde", "noite"].some(t => trimmedMessage.includes(t))) {
 }
 
 saveMessage(sessionId, 'user', trimmedMessage);
+  
   const stateContext = `
 Estado atual do usuário:
 - Nome: ${session.state.nome || 'não definido'}
@@ -273,6 +274,7 @@ Estado atual do usuário:
 - Urgência: ${session.state.urgencia || 'não definido'}
 - Horário: ${session.state.horario || 'não definido'}
 `;
+  
   try {
     // --- Chama Claude com histórico completo ---
     const response = await anthropic.messages.create({
