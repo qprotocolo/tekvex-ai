@@ -182,6 +182,19 @@ app.get('/', (req, res) => {
 // ROTA PRINCIPAL — POST /chat
 // Recebe mensagem, chama a IA, salva no banco e retorna resposta.
 // ---------------------------------------------------------------
+
+function authMiddleware(req, res, next) {
+  const key = req.headers['x-api-key'];
+
+  if (!key || key !== PUBLIC_API_KEY) {
+    return res.status(401).json({
+      error: 'Não autorizado'
+    });
+  }
+
+  next();
+}
+
 app.post('/chat', chatLimiter, async (req, res) => {
   const { message, sessionId } = req.body;
 
