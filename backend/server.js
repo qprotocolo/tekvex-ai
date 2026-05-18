@@ -48,7 +48,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // CORS — permite requisições do frontend Vercel
 const ALLOWED_ORIGINS = [
-  'https://seu-frontend.vercel.app'
+  'https://tekvex-site.vercel.app'
 ];
 
 app.use(cors({
