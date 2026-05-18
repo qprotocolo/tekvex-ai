@@ -21,7 +21,6 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const SUPABASE_URL       = process.env.SUPABASE_URL;
 const SUPABASE_KEY       = process.env.SUPABASE_KEY;
 const PUBLIC_API_KEY = process.env.PUBLIC_API_KEY;
-const PUBLIC_API_KEY = process.env.PUBLIC_API_KEY;
 
 if (!PUBLIC_API_KEY) {
   console.error('ERRO CRÍTICO: PUBLIC_API_KEY não definida.');
