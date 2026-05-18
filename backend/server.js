@@ -210,6 +210,7 @@ app.get('/', (req, res) => {
 // ---------------------------------------------------------------
 app.post('/chat', async (req, res) => {
   const { message, sessionId } = req.body;
+  const trimmedMessage = message.trim();
 
   // --- Validação de entrada ---
   if (!message || typeof message !== 'string' || message.trim() === '') {
