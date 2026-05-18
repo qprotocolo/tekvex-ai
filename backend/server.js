@@ -210,12 +210,21 @@ app.get('/', (req, res) => {
 // ---------------------------------------------------------------
 app.post('/chat', async (req, res) => {
   const { message, sessionId } = req.body;
+
+  // 1. validação base (ANTES de qualquer trim)
+  if (!message || typeof message !== 'string') {
+    return res.status(400).json({
+      error: 'Campo "message" é obrigatório.'
+    });
+  }
+
+  if (!sessionId || typeof sessionId !== 'string') {
+    return res.status(400).json({
+      error: 'Campo "sessionId" é obrigatório.'
+    });
+  }
+
   const trimmedMessage = message.trim();
-  if (trimmedMessage.length < 2) {
-  return res.status(400).json({
-    error: "Mensagem muito curta"
-  });
-}
 
 if (trimmedMessage.length > 500) {
   return res.status(400).json({
