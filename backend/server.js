@@ -313,7 +313,7 @@ Estado atual do usuário:
     // --- Detecta se lead foi coletado e salva no banco ---
     const leadDetected = reply.includes('[LEAD:');
     if (leadDetected) {
-      saveLead(sessionId, reply);
+      await saveLead(sessionId, reply);
     }
 
     // --- Retorna resposta para o frontend ---
