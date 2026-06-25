@@ -498,11 +498,14 @@
   // CHAMADA AO BACKEND
   // ============================================================
   async function callBackend(message) {
-    const response = await fetch(`${CONFIG.API_URL}/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message, sessionId }),
-    });
+  const response = await fetch(`${CONFIG.API_URL}/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': CONFIG.PUBLIC_API_KEY,
+    },
+    body: JSON.stringify({ message, sessionId }),
+  });
 
     // Erros HTTP são tratados como exceções
     if (!response.ok) {
