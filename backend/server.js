@@ -11,6 +11,7 @@ import { createClient } from '@supabase/supabase-js';
 import rateLimit from 'express-rate-limit';
 
 const app = express();
+app.set('trust proxy', 1);
 
 // ---------------------------------------------------------------
 // SEGURANÇA — Variáveis de ambiente obrigatórias
