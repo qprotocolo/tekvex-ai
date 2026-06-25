@@ -69,7 +69,7 @@ app.use(cors({
     return callback(new Error('Bloqueado por CORS'));
   },
   methods: ['GET', 'POST'],
-  allowedHeaders: ['Content-Type']
+  allowedHeaders: ['Content-Type', 'x-api-key']
 }));
 
 // Parser de JSON — necessário para ler req.body
